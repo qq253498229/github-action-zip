@@ -32,10 +32,10 @@ jobs:
         with:
           path: './'
           depth: '2'
-#      - name: Release
-#        uses: softprops/action-gh-release@v2
-#        with:
-#          files: |
-#            ./tests/1so.zip
-#            ./tests/1.zip
-#          draft: true
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./1so.zip
+            ./1.zip
+          draft: true
