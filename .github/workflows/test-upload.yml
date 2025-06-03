@@ -30,7 +30,7 @@ jobs:
       - name: Print file tree
         uses: jaywcjlove/github-action-folder-tree@main
         with:
-          path: './tests'
+          path: './'
           depth: '2'
 #      - name: Release
 #        uses: softprops/action-gh-release@v2
