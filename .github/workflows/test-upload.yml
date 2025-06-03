@@ -2,7 +2,7 @@ name: test-upload
 on:
   push:
     branches:
-      - test
+      - v1
 
 env:
   IS_CI: true
