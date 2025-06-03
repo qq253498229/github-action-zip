@@ -39,4 +39,5 @@ jobs:
           files: |
             ./1so.zip
             ./1.zip
+            ./1so.dmg.zip
           draft: true
