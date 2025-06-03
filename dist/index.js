@@ -27261,10 +27261,17 @@ async function run() {
         for (const string of fileList) {
             const splits = string.trim().split('->');
             const from = splits[0].trim();
+            // zip name:1so.zip
             coreExports.info(`zip name:${from}`);
             const fList = splits[1].trim();
             const to = fList.split(',').map((s) => s.trim());
+            // to:./tests/一搜.app,./tess/1.txt
             coreExports.info(`to:${to}`);
+            const zipper = new Zipper(from);
+            for (const string1 of to) {
+                zipper.addFile(string1);
+            }
+            await zipper.zip();
         }
         const draft = coreExports.getInput('draft') === 'true';
         coreExports.info(`draft:${draft}`);
@@ -27278,6 +27285,33 @@ async function run() {
         // Fail the workflow run if an error occurs
         if (error instanceof Error)
             coreExports.setFailed(error.message);
+    }
+}
+class Zipper {
+    name;
+    files;
+    constructor(name) {
+        this.name = name;
+        this.files = [];
+    }
+    addFile(filename) {
+        this.files.push(filename);
+    }
+    async zip() {
+        coreExports.info(`zip files:${this.files}`);
+        /*const output = createWriteStream(to)
+        const archive = archiver('zip', { zlib: { level: 9 } })
+        const fileStat = statSync(from)
+        const subFolderName = basename(from)
+        info(`subFolderName:${subFolderName}`)
+        info(`isDirectory:${fileStat.isDirectory()}`)
+        if (fileStat.isDirectory()) {
+          archive.directory(from, subFolderName)
+        } else {
+          archive.append(from, { name: subFolderName })
+        }
+        archive.pipe(output)
+        await archive.finalize()*/
     }
 }
 

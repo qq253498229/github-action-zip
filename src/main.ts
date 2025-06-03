@@ -18,10 +18,18 @@ export async function run(): Promise<void> {
     for (const string of fileList) {
       const splits = string.trim().split('->')
       const from = splits[0].trim()
+      // zip name:1so.zip
       info(`zip name:${from}`)
       const fList = splits[1].trim()
       const to = fList.split(',').map((s) => s.trim())
+      // to:./tests/一搜.app,./tess/1.txt
       info(`to:${to}`)
+
+      const zipper = new Zipper(from)
+      for (const string1 of to) {
+        zipper.addFile(string1)
+      }
+      await zipper.zip()
     }
 
     const draft: boolean = getInput('draft') === 'true'
@@ -36,5 +44,36 @@ export async function run(): Promise<void> {
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
+  }
+}
+
+class Zipper {
+  name: string
+  files: string[]
+
+  constructor(name: string) {
+    this.name = name
+    this.files = []
+  }
+
+  addFile(filename: string) {
+    this.files.push(filename)
+  }
+
+  async zip() {
+    info(`zip files:${this.files}`)
+    /*const output = createWriteStream(to)
+    const archive = archiver('zip', { zlib: { level: 9 } })
+    const fileStat = statSync(from)
+    const subFolderName = basename(from)
+    info(`subFolderName:${subFolderName}`)
+    info(`isDirectory:${fileStat.isDirectory()}`)
+    if (fileStat.isDirectory()) {
+      archive.directory(from, subFolderName)
+    } else {
+      archive.append(from, { name: subFolderName })
+    }
+    archive.pipe(output)
+    await archive.finalize()*/
   }
 }
