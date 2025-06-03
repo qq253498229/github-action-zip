@@ -17,8 +17,11 @@ export async function run(): Promise<void> {
     info(`fileList:${fileList}`)
     for (const string of fileList) {
       const splits = string.trim().split('->')
-      info(`from:${splits[0].trim()}`)
-      info(`to:${splits[1].trim()}`)
+      const from = splits[0].trim()
+      info(`zip name:${from}`)
+      const fList = splits[1].trim()
+      const to = fList.split(',').map((s) => s.trim())
+      info(`to:${to}`)
     }
 
     const draft: boolean = getInput('draft') === 'true'

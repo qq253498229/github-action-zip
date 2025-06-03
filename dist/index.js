@@ -27260,8 +27260,11 @@ async function run() {
         coreExports.info(`fileList:${fileList}`);
         for (const string of fileList) {
             const splits = string.trim().split('->');
-            coreExports.info(`from:${splits[0].trim()}`);
-            coreExports.info(`to:${splits[1].trim()}`);
+            const from = splits[0].trim();
+            coreExports.info(`zip name:${from}`);
+            const fList = splits[1].trim();
+            const to = fList.split(',').map((s) => s.trim());
+            coreExports.info(`to:${to}`);
         }
         const draft = coreExports.getInput('draft') === 'true';
         coreExports.info(`draft:${draft}`);
