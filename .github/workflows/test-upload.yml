@@ -25,7 +25,7 @@ jobs:
       - uses: ./
         with:
           files: |
-            1so.zip -> ./tests/一搜.app,./tess/1.txt
+            1so.zip -> ./tests/一搜.app,./test/1.txt
             1.zip -> ./tests/1.txt
       - name: Print file tree
         uses: jaywcjlove/github-action-folder-tree@main
