@@ -27256,6 +27256,13 @@ async function run() {
     try {
         const files = coreExports.getInput('files');
         coreExports.info(`files:${files}`);
+        const fileList = files.split('\n').map((line) => line);
+        coreExports.info(`fileList:${fileList}`);
+        for (const string of fileList) {
+            const splits = string.trim().split('->');
+            coreExports.info(`from:${splits[0].trim()}`);
+            coreExports.info(`to:${splits[1].trim()}`);
+        }
         const draft = coreExports.getInput('draft') === 'true';
         coreExports.info(`draft:${draft}`);
         const env$1 = env;

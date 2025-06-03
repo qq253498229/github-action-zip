@@ -22,14 +22,20 @@ jobs:
         with:
           path: './tests'
           depth: '2'
+      - name: 打印文件树
+        uses: jaywcjlove/github-action-folder-tree@main
+        with:
+          path: './tests'
+          depth: 2
       - name: Zip file
         uses: ./
         with:
           files: |
             ./tests/一搜.app -> 1so.zip
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            ./1so.app
-          draft: true
+
+#      - name: Release
+#        uses: softprops/action-gh-release@v2
+#        with:
+#          files: |
+#            ./1so.app
+#          draft: true
