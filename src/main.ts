@@ -1,5 +1,8 @@
 import * as core from '@actions/core'
-import { wait } from './wait.js'
+import { getInput, info } from '@actions/core'
+import { env as processEnv } from 'process'
+
+type Env = { [key: string]: string | undefined }
 
 /**
  * The main function for the action.
@@ -8,15 +11,15 @@ import { wait } from './wait.js'
  */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
+    const files: string = getInput('files')
+    info(`files:${files}`)
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const draft: boolean = getInput('draft') === 'true'
+    info(`draft:${draft}`)
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const env: Env = processEnv
+    const envJson = JSON.stringify(env, null, 2)
+    info(`envJson:${envJson}`)
 
     // Set outputs for other workflow steps to use
     core.setOutput('time', new Date().toTimeString())

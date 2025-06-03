@@ -1,0 +1,35 @@
+name: test-upload
+on:
+  push:
+    branches:
+      - test
+
+env:
+  IS_CI: true
+
+permissions:
+  contents: write
+
+jobs:
+  ubuntu:
+    name: ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Print file tree
+        uses: jaywcjlove/github-action-folder-tree@main
+        with:
+          path: './tests'
+          depth: '2'
+      - name: Zip file
+        uses: ./
+        with:
+          files: |
+            ./tests/一搜.app -> 1so.zip
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./1so.app
+          draft: true
