@@ -27,15 +27,12 @@ jobs:
         with:
           path: './tests'
           depth: 2
-      - name: Zip file
-        uses: ./
+      - run: cd tests && zip -r 1so.zip 一搜.app
+      - run: cd tests && zip 1.zip 1.txt
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
           files: |
-            ./tests/一搜.app -> 1so.zip
-
-#      - name: Release
-#        uses: softprops/action-gh-release@v2
-#        with:
-#          files: |
-#            ./1so.app
-#          draft: true
+            ./tests/1so.zip
+            ./tests/1.zip
+          draft: true
