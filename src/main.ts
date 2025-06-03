@@ -1,6 +1,9 @@
 import * as core from '@actions/core'
 import { getInput, info } from '@actions/core'
 import { env as processEnv } from 'process'
+import { createWriteStream, statSync } from 'node:fs'
+import { basename } from 'node:path'
+import archiver from 'archiver'
 
 type Env = { [key: string]: string | undefined }
 
@@ -61,7 +64,23 @@ class Zipper {
   }
 
   async zip() {
-    info(`zip files:${this.files}`)
+    info(`zipper name:${this.name}`)
+    info(`zipper files:${this.files}`)
+    const output = createWriteStream(this.name)
+    const archive = archiver('zip', { zlib: { level: 9 } })
+    for (const file of this.files) {
+      const fileStat = statSync(file)
+      const subFolderName = basename(file)
+      info(`subFolderName:${subFolderName}`)
+      info(`isDirectory:${fileStat.isDirectory()}`)
+      if (fileStat.isDirectory()) {
+        archive.directory(file, subFolderName)
+      } else {
+        archive.append(file, { name: subFolderName })
+      }
+    }
+    archive.pipe(output)
+    await archive.finalize()
     /*const output = createWriteStream(to)
     const archive = archiver('zip', { zlib: { level: 9 } })
     const fileStat = statSync(from)
