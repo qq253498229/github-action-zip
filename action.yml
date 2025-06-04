@@ -13,11 +13,6 @@ inputs:
     description: '要压缩的文件'
     required: true
 
-# Define your outputs here.
-outputs:
-  time:
-    description: Your output description here
-
 runs:
   using: node20
   main: dist/index.js

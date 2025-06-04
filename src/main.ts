@@ -1,11 +1,8 @@
 import * as core from '@actions/core'
-import { getInput, info } from '@actions/core'
-import { env as processEnv } from 'process'
+import { debug, getInput, info } from '@actions/core'
 import { createWriteStream, readFileSync, statSync } from 'node:fs'
 import { basename } from 'node:path'
 import archiver from 'archiver'
-
-type Env = { [key: string]: string | undefined }
 
 /**
  * The main function for the action.
@@ -15,18 +12,18 @@ type Env = { [key: string]: string | undefined }
 export async function run(): Promise<void> {
   try {
     const files: string = getInput('files')
-    info(`files:${files}`)
+    debug(`input files:${files}`)
     const fileList = files.split('\n').map((line: string) => line)
-    info(`fileList:${fileList}`)
+    debug(`fileList:${fileList}`)
     for (const string of fileList) {
       const splits = string.trim().split('->')
       const from = splits[0].trim()
       // zip name:1so.zip
-      info(`zip name:${from}`)
+      debug(`zip name:${from}`)
       const fList = splits[1].trim()
       const to = fList.split(',').map((s) => s.trim())
       // to:./tests/一搜.app,./tess/1.txt
-      info(`to:${to}`)
+      debug(`to:${to}`)
 
       const zipper = new Zipper(from)
       for (const string1 of to) {
@@ -34,16 +31,6 @@ export async function run(): Promise<void> {
       }
       await zipper.zip()
     }
-
-    const draft: boolean = getInput('draft') === 'true'
-    info(`draft:${draft}`)
-
-    const env: Env = processEnv
-    const envJson = JSON.stringify(env, null, 2)
-    info(`envJson:${envJson}`)
-
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
@@ -65,17 +52,17 @@ class Zipper {
 
   async zip() {
     info('------------')
-    info(`zipper name:${this.name}`)
-    info(`zipper files:${this.files}`)
+    info(`压缩包:${this.name}`)
+    debug(`zipper files:${this.files}`)
     const output = createWriteStream(this.name)
     const archive = archiver('zip', { zlib: { level: 9 } })
     archive.pipe(output)
     for (const file of this.files) {
-      info(`file:${file}`)
+      info(`添加文件:${file}`)
       const fileStat = statSync(file)
       const subFolderName = basename(file)
-      info(`subFolderName:${subFolderName}`)
-      info(`isDirectory:${fileStat.isDirectory()}`)
+      info(`文件名:${subFolderName}`)
+      info(`是否是文件夹:${fileStat.isDirectory()}`)
       if (fileStat.isDirectory()) {
         archive.directory(file, subFolderName)
       } else {
@@ -84,5 +71,6 @@ class Zipper {
       }
     }
     await archive.finalize()
+    info('------------')
   }
 }
