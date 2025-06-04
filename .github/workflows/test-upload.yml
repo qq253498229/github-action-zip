@@ -25,19 +25,10 @@ jobs:
       - uses: ./
         with:
           files: |
-            1so.zip -> ./tests/一搜.app,./tests/1.txt
-            1.zip -> ./tests/1.txt
             1so.dmg.zip -> ./tests/一搜_0.1.0_x64.dmg
+      - run: ls -al
       - name: Print file tree
         uses: jaywcjlove/github-action-folder-tree@main
         with:
           path: './'
           depth: '2'
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            ./1so.zip
-            ./1.zip
-            ./1so.dmg.zip
-          draft: true

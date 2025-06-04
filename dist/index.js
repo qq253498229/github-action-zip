@@ -28,7 +28,7 @@ import require$$0$d from 'diagnostics_channel';
 import require$$2$3 from 'child_process';
 import require$$6$1 from 'timers';
 import { env } from 'process';
-import require$$4$1, { createWriteStream, statSync } from 'node:fs';
+import require$$4$1, { createWriteStream, statSync, readFileSync } from 'node:fs';
 import require$$1$6, { basename as basename$1 } from 'node:path';
 import require$$0$e from 'constants';
 import require$$2$5 from 'node:url';
@@ -65301,11 +65301,14 @@ class Zipper {
         this.files.push(filename);
     }
     async zip() {
+        coreExports.info('------------');
         coreExports.info(`zipper name:${this.name}`);
         coreExports.info(`zipper files:${this.files}`);
         const output = createWriteStream(this.name);
         const archive = archiver('zip', { zlib: { level: 9 } });
+        archive.pipe(output);
         for (const file of this.files) {
+            coreExports.info(`file:${file}`);
             const fileStat = statSync(file);
             const subFolderName = basename$1(file);
             coreExports.info(`subFolderName:${subFolderName}`);
@@ -65314,24 +65317,11 @@ class Zipper {
                 archive.directory(file, subFolderName);
             }
             else {
-                archive.append(file, { name: subFolderName });
+                const buf = readFileSync(file);
+                archive.append(buf, { name: subFolderName });
             }
         }
-        archive.pipe(output);
         await archive.finalize();
-        /*const output = createWriteStream(to)
-        const archive = archiver('zip', { zlib: { level: 9 } })
-        const fileStat = statSync(from)
-        const subFolderName = basename(from)
-        info(`subFolderName:${subFolderName}`)
-        info(`isDirectory:${fileStat.isDirectory()}`)
-        if (fileStat.isDirectory()) {
-          archive.directory(from, subFolderName)
-        } else {
-          archive.append(from, { name: subFolderName })
-        }
-        archive.pipe(output)
-        await archive.finalize()*/
     }
 }
 

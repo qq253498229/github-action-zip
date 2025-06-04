@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import { getInput, info } from '@actions/core'
 import { env as processEnv } from 'process'
-import { createWriteStream, statSync } from 'node:fs'
+import { createWriteStream, readFileSync, statSync } from 'node:fs'
 import { basename } from 'node:path'
 import archiver from 'archiver'
 
@@ -64,11 +64,14 @@ class Zipper {
   }
 
   async zip() {
+    info('------------')
     info(`zipper name:${this.name}`)
     info(`zipper files:${this.files}`)
     const output = createWriteStream(this.name)
     const archive = archiver('zip', { zlib: { level: 9 } })
+    archive.pipe(output)
     for (const file of this.files) {
+      info(`file:${file}`)
       const fileStat = statSync(file)
       const subFolderName = basename(file)
       info(`subFolderName:${subFolderName}`)
@@ -76,23 +79,10 @@ class Zipper {
       if (fileStat.isDirectory()) {
         archive.directory(file, subFolderName)
       } else {
-        archive.append(file, { name: subFolderName })
+        const buf = readFileSync(file)
+        archive.append(buf, { name: subFolderName })
       }
     }
-    archive.pipe(output)
     await archive.finalize()
-    /*const output = createWriteStream(to)
-    const archive = archiver('zip', { zlib: { level: 9 } })
-    const fileStat = statSync(from)
-    const subFolderName = basename(from)
-    info(`subFolderName:${subFolderName}`)
-    info(`isDirectory:${fileStat.isDirectory()}`)
-    if (fileStat.isDirectory()) {
-      archive.directory(from, subFolderName)
-    } else {
-      archive.append(from, { name: subFolderName })
-    }
-    archive.pipe(output)
-    await archive.finalize()*/
   }
 }
