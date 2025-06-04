@@ -27,7 +27,6 @@ import require$$6 from 'string_decoder';
 import require$$0$d from 'diagnostics_channel';
 import require$$2$3 from 'child_process';
 import require$$6$1 from 'timers';
-import { env } from 'process';
 import require$$4$1, { createWriteStream, statSync, readFileSync } from 'node:fs';
 import require$$1$6, { basename as basename$1 } from 'node:path';
 import require$$0$e from 'constants';
@@ -65258,31 +65257,24 @@ var archiver = /*@__PURE__*/getDefaultExportFromCjs(archiverExports);
 async function run() {
     try {
         const files = coreExports.getInput('files');
-        coreExports.info(`files:${files}`);
+        coreExports.debug(`input files:${files}`);
         const fileList = files.split('\n').map((line) => line);
-        coreExports.info(`fileList:${fileList}`);
+        coreExports.debug(`fileList:${fileList}`);
         for (const string of fileList) {
             const splits = string.trim().split('->');
             const from = splits[0].trim();
             // zip name:1so.zip
-            coreExports.info(`zip name:${from}`);
+            coreExports.debug(`zip name:${from}`);
             const fList = splits[1].trim();
             const to = fList.split(',').map((s) => s.trim());
             // to:./tests/一搜.app,./tess/1.txt
-            coreExports.info(`to:${to}`);
+            coreExports.debug(`to:${to}`);
             const zipper = new Zipper(from);
             for (const string1 of to) {
                 zipper.addFile(string1);
             }
             await zipper.zip();
         }
-        const draft = coreExports.getInput('draft') === 'true';
-        coreExports.info(`draft:${draft}`);
-        const env$1 = env;
-        const envJson = JSON.stringify(env$1, null, 2);
-        coreExports.info(`envJson:${envJson}`);
-        // Set outputs for other workflow steps to use
-        coreExports.setOutput('time', new Date().toTimeString());
     }
     catch (error) {
         // Fail the workflow run if an error occurs
@@ -65302,17 +65294,17 @@ class Zipper {
     }
     async zip() {
         coreExports.info('------------');
-        coreExports.info(`zipper name:${this.name}`);
-        coreExports.info(`zipper files:${this.files}`);
+        coreExports.info(`压缩包:${this.name}`);
+        coreExports.debug(`zipper files:${this.files}`);
         const output = createWriteStream(this.name);
         const archive = archiver('zip', { zlib: { level: 9 } });
         archive.pipe(output);
         for (const file of this.files) {
-            coreExports.info(`file:${file}`);
+            coreExports.info(`添加文件:${file}`);
             const fileStat = statSync(file);
             const subFolderName = basename$1(file);
-            coreExports.info(`subFolderName:${subFolderName}`);
-            coreExports.info(`isDirectory:${fileStat.isDirectory()}`);
+            coreExports.info(`文件名:${subFolderName}`);
+            coreExports.info(`是否是文件夹:${fileStat.isDirectory()}`);
             if (fileStat.isDirectory()) {
                 archive.directory(file, subFolderName);
             }
@@ -65322,6 +65314,7 @@ class Zipper {
             }
         }
         await archive.finalize();
+        coreExports.info('------------');
     }
 }
 

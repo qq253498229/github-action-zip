@@ -21,7 +21,6 @@ jobs:
           files: |
             1so.dmg.zip -> ./tests/一搜_0.1.0_x64.dmg
       - run: ls -al
-
 ```
 
 压缩多个文件
@@ -44,5 +43,4 @@ jobs:
             1so.dmg.zip -> ./tests/一搜_0.1.0_x64.dmg,./tests/一搜.app,./tests/1.txt
             1.txt.zip -> ./tests/1.txt
       - run: ls -al
-
 ```
